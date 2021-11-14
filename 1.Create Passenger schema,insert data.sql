@@ -357,8 +357,42 @@ GROUP BY
 
 -- 11)	Display the distance, price in three categories in table Price
 -- a)	Expensive if the cost is more than 1000
---  
--- 
 -- b)	Average Cost if the cost is less than 1000 and greater than 500
 -- c)	Cheap otherwise
+-- ASSUMPTION I HAVE ADDED  <=1000 FOR NOT MISSING OUT ON VALUE 1000
+SELECT
+	R.DISTANCE ,
+	P.SEASON ,
+	P.PRICE,
+	CASE
+		WHEN P.PRICE > 1000 THEN 'Expensive'
+		WHEN P.PRICE <= 1000 AND P.PRICE > 500 THEN 'Average Cost'
+		ELSE 'Cheap'
+	END AS `VERDICT`
+FROM
+	ROUTES R
+JOIN PRICE P ON
+	R.ROUTE_ID = P.ROUTE_ID;
+
+-- OUTPUT
+
+-- |DISTANCE|SEASON |PRICE|VERDICT     |
+-- |--------|-------|-----|------------|
+-- |350     |Festive|770  |Average Cost|
+-- |350     |Normal |434  |Cheap       |
+-- |500     |Normal |620  |Average Cost|
+-- |500     |Festive|1100 |Expensive   |
+-- |500     |Normal |620  |Average Cost|
+-- |500     |Festive|1240 |Expensive   |
+-- |600     |Festive|1320 |Expensive   |
+-- |600     |Normal |744  |Average Cost|
+-- |700     |Festive|1540 |Expensive   |
+-- |700     |Normal |1488 |Expensive   |
+-- |700     |Normal |868  |Average Cost|
+-- |700     |Festive|2640 |Expensive   |
+-- |1000    |Festive|2200 |Expensive   |
+-- |1000    |Normal |1860 |Expensive   |
+
+
+
 
