@@ -2,7 +2,7 @@ create database if not exists PASSENGER_SCHEMA;
 
 USE PASSENGER_SCHEMA;
 
-
+-- 2NF - ROUTES TABLE - REMOVED DATA DUPLICACY AS MANY PASSENGERS CAN HAVE SAME ROUTE I.E. BOARDING->DESTINATION AND DISTANCE
 CREATE TABLE IF NOT EXISTS `ROUTES` (
 `ROUTE_ID` VARCHAR(10) PRIMARY KEY,
 `BOARDING_CITY` VARCHAR(20) NOT NULL,
@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS `PRICE`(
 `PRICE` INT NOT NULL,
 FOREIGN KEY(`ROUTE_ID`) REFERENCES ROUTES(`ROUTE_ID`)
 );
+
+
 
 SET
 FOREIGN_KEY_CHECKS = 0;
@@ -115,6 +117,9 @@ GROUP BY
 
 
 
+
+
+
 -- 4)	Find the minimum ticket price for Sleeper Bus.
 -- ASSUMPTION - I HAVE ADDED NEW VALUE AND ROWS IN PRICE TABLE AS PER ADDITIONAL COMMENTS IN PROBLEM STMT
 
@@ -142,6 +147,10 @@ LIMIT 1;
 
 
 
+
+
+
+
 -- 5)	Select passenger names whose names start with character 'S'
 SELECT
 	PASSENGER_NAME
@@ -154,6 +163,9 @@ WHERE
 -- |PASSENGER_NAME|
 -- |--------------|
 -- |Sejal         |
+
+
+
 
 
 
@@ -220,6 +232,10 @@ WHERE
 
 
 
+
+
+
+
 -- 7)	What is the passenger name and his/her ticket price who travelled in Sitting bus for a distance of 1000 KM s
 -- TABLE PASSENGER -> ROUTE ON ROUTE_ID -> PRICE ON ROUTE_ID
 SELECT
@@ -240,6 +256,12 @@ WHERE
 -- |PASSENGER_NAME|PRICE|
 -- |--------------|-----|
 -- |Udit          |1860 |
+
+
+
+
+
+
 
 
 
@@ -289,11 +311,19 @@ WHERE
 	PA.PASSENGER_NAME = 'Pallavi' ;
 
 
--- OUTPUT -IF ABOVE INVERSION OF BOARDING AND DESTINATION IS NOT CONSIDERED
+-- OUTPUT -IF ABOVE INVERSION OF BOARDING AND DESTINATION IS NOT CONSIDERED THEN PANAJI->BANGLURU
 -- |PASSENGER_NAME|BOARDING_CITY|DESTINATION_CITY|DISTANCE|BUS_TYPE|PRICE|
 -- |--------------|-------------|----------------|--------|--------|-----|
 -- |Pallavi       |Panaji       |Bengaluru       |600     |Sleeper |1320 |
 -- |Pallavi       |Panaji       |Bengaluru       |600     |Sitting |744  |
+
+
+
+
+
+
+
+
 
 
 
@@ -344,18 +374,50 @@ ORDER BY
 
 
 
+
+
+
+
+
+
+
 -- 10)	Display the passenger name and percentage of distance travelled by that passenger from 
 -- the total distance travelled by all passengers without using user variables
+
 SELECT
 	P.PASSENGER_NAME ,
 	R.DISTANCE ,
-	((R.DISTANCE / SUM(R.DISTANCE)) * 100)
+	( R.DISTANCE / (
+	SELECT
+		SUM(R2.DISTANCE)
+	FROM
+		ROUTES R2)) * 100 AS 'TAGE DIST. BY PASSENGER'
 FROM
 	PASSENGER P
-LEFT JOIN ROUTES R on
-	P.ROUTE_ID = R.ROUTE_ID
-GROUP BY
-	R.DISTANCE ;
+JOIN ROUTES R ON
+	P.ROUTE_ID = R.ROUTE_ID ;
+
+
+-- OUTPUT
+
+-- |PASSENGER_NAME|DISTANCE|PERCENTAGE DIST. BY PASSENGER|
+-- |--------------|--------|-----------------------------|
+-- |Sejal         |350     |5.3435                       |
+-- |Khusboo       |1500    |22.9008                      |
+-- |Manish        |500     |7.6336                       |
+-- |Anmol         |700     |10.6870                      |
+-- |Ankur         |500     |7.6336                       |
+-- |Pallavi       |600     |9.1603                       |
+-- |Hemant        |700     |10.6870                      |
+-- |Piyush        |700     |10.6870                      |
+-- |Udit          |1000    |15.2672                      |
+
+
+
+
+
+
+
 
 
 -- 11)	Display the distance, price in three categories in table Price
