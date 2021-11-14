@@ -191,17 +191,71 @@ JOIN ROUTES R ON PA.ROUTE_ID = R.ROUTE_ID
 JOIN PRICE PR ON R.ROUTE_ID = PR.ROUTE_ID 
 WHERE PA.PASSENGER_NAME = 'Pallavi' ;
 
--- OUTPUT
+
+
+
+-- OUTPUT  - IF INVERSION OF DESTINATION AND BOARDING IS CONSIDERED AND PRICES THE SAME
 -- |PASSENGER_NAME|BOARDING CITY|DESTINATION CITY|DISTANCE|BUS_TYPE|PRICE|
 -- |--------------|-------------|----------------|--------|--------|-----|
 -- |Pallavi       |Bengaluru    |Panaji          |600     |Sleeper |1320 |
 -- |Pallavi       |Bengaluru    |Panaji          |600     |Sitting |744  |
 
 
+SELECT PA.PASSENGER_NAME ,R.BOARDING_CITY ,  R.DESTINATION_CITY,  R.DISTANCE , PR.BUS_TYPE ,PR.PRICE 
+FROM PASSENGER PA
+JOIN ROUTES R ON PA.ROUTE_ID = R.ROUTE_ID 
+JOIN PRICE PR ON R.ROUTE_ID = PR.ROUTE_ID 
+WHERE PA.PASSENGER_NAME = 'Pallavi' ;
+
+
+-- OUTPUT -IF ABOVE INVERSION OF BOARDING AND DESTINATION IS NOT CONSIDERED
+-- |PASSENGER_NAME|BOARDING_CITY|DESTINATION_CITY|DISTANCE|BUS_TYPE|PRICE|
+-- |--------------|-------------|----------------|--------|--------|-----|
+-- |Pallavi       |Panaji       |Bengaluru       |600     |Sleeper |1320 |
+-- |Pallavi       |Panaji       |Bengaluru       |600     |Sitting |744  |
+
 
 
 -- 9)		List the distances from the "Passenger" table which are unique (non-repeated distances) in descending order.
--- 10)	Display the passenger name and percentage of distance travelled by that passenger from the total distance travelled by all passengers without using user variables
+-- PASSENGER -> ROUTES 
+-- THIS -> SOLUTION 1 - DISTANCES THAT ARE NOT REPEATED i.e. APPEAR ONLY ONCE IN TABLE CATALOGUE
+SELECT R.DISTANCE FROM PASSENGER P
+JOIN ROUTES R WHERE P.ROUTE_ID = R.ROUTE_ID 
+GROUP BY R.DISTANCE 
+HAVING COUNT(R.ROUTE_ID) = 1
+ORDER BY R.DISTANCE DESC;
+
+-- |DISTANCE|
+-- |--------|
+-- |1500    |
+-- |1000    |
+-- |600     |
+-- |350     |
+
+
+
+-- SOLUTION 2 - DIFFERENT THAN ABOVE. SIMPLY UNIQUE DISTANCE THAT ARE REPEATITIVE FOR ROUTES
+SELECT DISTINCT DISTANCE FROM PASSENGER P
+JOIN ROUTES R WHERE P.ROUTE_ID = R.ROUTE_ID 
+ORDER BY R.DISTANCE DESC;
+
+-- |DISTANCE|
+-- |--------|
+-- |1500    |
+-- |1000    |
+-- |700     |
+-- |600     |
+-- |500     |
+-- |350     |
+
+
+
+
+-- 10)	Display the passenger name and percentage of distance travelled by that passenger from 
+-- the total distance travelled by all passengers without using user variables
+-- SELECT P.PASSENGER_NAME , ((R.DISTANCE / SUM(R.DISTANCE) ) * 100) AS `% OF TOTAL DISTACNCE` , SUM(R.DISTANCE) AS `TOTAL DISTANCE` FROM PASSENGER P
+-- JOIN ROUTES R WHERE P.ROUTE_ID = R.ROUTE_ID ;
+
 -- 11)	Display the distance, price in three categories in table Price
 -- a)	Expensive if the cost is more than 1000
 --  
