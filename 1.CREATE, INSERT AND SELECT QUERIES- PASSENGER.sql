@@ -131,10 +131,14 @@ FROM
 WHERE
 	p.BUS_TYPE = 'Sleeper';
 
+
+-- Sol2
 SELECT
 	PRICE
 FROM
-	PRICE
+	PRICE p
+WHERE
+	p.BUS_TYPE = 'Sleeper'
 ORDER BY
 	PRICE ASC
 LIMIT 1;
